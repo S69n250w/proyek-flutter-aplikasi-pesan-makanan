@@ -33,10 +33,6 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           ),
         ),
         centerTitle: true,
-        // leading: IconButton(onPressed: () {
-          
-        // },
-        // icon: Icon(Icons.arrow_back_ios_new)),
       ),
       body: SingleChildScrollView(
         child: Column(
