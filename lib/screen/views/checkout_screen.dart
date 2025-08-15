@@ -1,46 +1,21 @@
+import 'package:aplikasi_sederhana/utils/int_to_rupiah.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_sederhana/model/food.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  final List<Food> cartItems;
+
+  const CheckoutScreen({super.key, required this.cartItems});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
-  final List<Food> cartItems = [
-    Food(
-      id: '1',
-      name: 'Ikan Kakap Sambalado',
-      description: '',
-      imageUrl: 'assets/img/ikan_kakap_sambalado.jpg',
-      price: 20000,
-      qty: 10
-    ),
-    Food(
-      id: '2',
-      name: 'Kangkung Belacan',
-      description: '',
-      imageUrl: 'assets/img/kangkung_belacan.jpg',
-      price: 15000,
-      qty: 2,
-    ),
-    Food(
-      id: '3',
-      name: 'Soto', 
-      description: '',
-      imageUrl: 'assets/img/soto.jpg',
-      price: 25000,
-      qty: 3,
-    ),
-  ];
-
+class _CheckoutScreenState extends State<CheckoutScreen> {
   String? selectedPayment;
 
-class _CheckoutScreenState extends State<CheckoutScreen> {
-  
   double get subtotal =>
-      cartItems.fold(0, (sum, item) => sum + item.price * item.qty);
+      widget.cartItems.fold(0, (sum, item) => sum + item.price * item.qty);
   double get tax => subtotal * 0.11; // 11%
   double get adminFee => subtotal * 0.05; // 5%
   double get shipmentFee => 5000.0;
@@ -52,9 +27,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       appBar: AppBar(
         title: const Text(
           "Keranjang",
-          style: TextStyle(
-            color: Colors.white
-          ),
+          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: Colors.orange,
@@ -72,7 +45,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             _buildPriceRow("Biaya pemesanan (5%)", adminFee.toInt()),
             _buildPriceRow("Biaya pengiriman", shipmentFee.toInt()),
             const SizedBox(height: 16),
-            _buildNotice("Pastikan untuk memeriksa ulang pesanan Anda sebelum mengonfirmasi!"),
+            _buildNotice(
+                "Pastikan untuk memeriksa ulang pesanan Anda sebelum mengonfirmasi!"),
             const Divider(thickness: 1.5),
             _buildLocationRow(),
             const Divider(thickness: 1.5),
@@ -89,28 +63,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   backgroundColor: MaterialStatePropertyAll(Colors.orange),
                 ),
                 onPressed: () {
-                
-              },
-              child: const Text(
-                "Pesan Sekarang",
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              )),
+                  // Handle order confirmation here
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Pesanan akan diproses..."))
+                  );
+                },
+                child: const Text(
+                  "Pesan Sekarang",
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
             )
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildSectionTitle(String title) {
     return SizedBox(
       width: double.infinity,
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold
-        ),
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -119,9 +94,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: cartItems.length,
+      itemCount: widget.cartItems.length,
       itemBuilder: (context, index) {
-        final item = cartItems[index];
+        final item = widget.cartItems[index];
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: Row(
@@ -134,37 +109,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-
               const SizedBox(width: 8.0),
-
               Expanded(
                 child: Text(
                   item.name,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold
-                  ),
-                )
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(item.price.toString()),
+                  Text(formatToRupiah(item.price)),
                   Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(99.0),
-                      border: Border.all(color: Colors.orange, width: 1.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 1,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3)
-                        )
-                      ]
-                    ),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(99.0),
+                        border: Border.all(color: Colors.orange, width: 1.0),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3))
+                        ]),
                     width: 36,
                     height: 36,
                     child: Text("${item.qty}"),
@@ -174,7 +143,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ],
           ),
         );
-      }
+      },
     );
   }
 
@@ -182,18 +151,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal
-          ),
-        ),
-        Text(
-          value.toString(),
-          style: TextStyle(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal
-          ),
-        )
+        Text(label,
+            style: TextStyle(
+                fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+        Text(formatToRupiah(value),
+            style: TextStyle(
+                fontWeight: isBold ? FontWeight.bold : FontWeight.normal))
       ],
     );
   }
@@ -204,8 +167,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       child: Text(
         message,
         style: TextStyle(
-          color: Colors.grey[600], fontStyle: FontStyle.italic, fontSize: 14
-        ),
+            color: Colors.grey[600], fontStyle: FontStyle.italic, fontSize: 14),
       ),
     );
   }
@@ -222,15 +184,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Lokasi",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text("Lokasi", style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 4),
-            Text(
-              "Atur lokasi Anda",
-              style: TextStyle(fontStyle: FontStyle.italic),
-            )
+            Text("Atur lokasi Anda", style: TextStyle(fontStyle: FontStyle.italic))
           ],
         )
       ],
@@ -253,33 +209,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             isExpanded: true,
             items: const [
               DropdownMenuItem(
-                value: "credit_card",
-                child: Text(
-                  "Credit Card",
-                  style: TextStyle(fontSize: 16),
-                )
-              ),
+                  value: "credit_card", child: Text("Credit Card")),
               DropdownMenuItem(
-                value: "cash",
-                child: Text(
-                  "Cash on Delivery",
-                  style: TextStyle(fontSize: 16),
-                )
-              ),
-              DropdownMenuItem(
-                value: "paypal",
-                child: Text(
-                  "Paypal",
-                  style: TextStyle(fontSize: 16),
-                )
-              )
+                  value: "cash", child: Text("Cash on Delivery")),
+              DropdownMenuItem(value: "paypal", child: Text("Paypal"))
             ],
             onChanged: (value) {
               setState(() {
                 selectedPayment = value;
               });
             },
-          )
+          ),
         )
       ],
     );

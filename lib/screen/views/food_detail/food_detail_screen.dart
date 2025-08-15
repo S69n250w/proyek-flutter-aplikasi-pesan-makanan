@@ -1,6 +1,7 @@
-import 'package:aplikasi_sederhana/screen/views/checkout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_sederhana/model/food.dart';
+import 'package:aplikasi_sederhana/utils/int_to_rupiah.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
 class FoodDetailScreen extends StatefulWidget {
   const FoodDetailScreen({super.key, required this.food});
@@ -64,7 +65,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   child: Column(
                     children: [
                       Text(
-                        widget.food.price.toString(),
+                        formatToRupiah(widget.food.price),
                         style: const TextStyle(
                           color: Colors.orange,
                           fontSize: 19,
@@ -205,9 +206,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const CheckoutScreen())
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Ditambahkan ke Keranjang, ${widget.food.name}: $quantity barang"))
                     );
                   },
                   icon: const Icon(

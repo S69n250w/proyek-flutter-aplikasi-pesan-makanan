@@ -1,3 +1,4 @@
+import 'package:aplikasi_sederhana/utils/int_to_rupiah.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_sederhana/model/food.dart';
 
@@ -34,7 +35,7 @@ class FoodCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    foodItem.price.toString(),
+                    formatToRupiah(foodItem.price),
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],
